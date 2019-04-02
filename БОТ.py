@@ -10,6 +10,7 @@ import news
 import fact
 import cities
 import advice
+import recipe
  
  
 def main():
@@ -34,6 +35,7 @@ def main():
     напишешь мне "новости" и я кину тебе новости всего мира
     напишешь мне "факт" и я расскажу тебе то, чего ты не знал
     напишешь мне "совет" и я помогу тебе с выбором
+    напишешь мне "рецепт" и я расскажу, как приготовить вкусняшку
     """ 
 
     play_time = """
@@ -45,6 +47,52 @@ def main():
     напиши мне "сериал" и я порекомендую тебе сериал
     напиши мне "фильм" и я порекомендую тебе фильм
     напиши мне "книга" и я порекомендую тебе книгу
+    """
+
+    genre_series = """
+    напиши "комедия", если хочешь посмотреть комедию
+    напиши "боевик", если хочешь посмотреть боевик
+    напиши "ужастик", если хочешь посмотреть ужастик
+    напиши "драма", если хочешь посмотреть драму
+    напиши "фантастика", если хочешь посмотреть фантастику
+    """
+
+    genre_films = """
+    напиши "комедия", если хочешь посмотреть комедию
+    напиши "боевик", если хочешь посмотреть боевик
+    напиши "ужастик", если хочешь посмотреть ужастик
+    напиши "драма", если хочешь посмотреть драму
+    напиши "фантастика", если хочешь посмотреть фантастику
+    """
+
+    genre_book = """
+    напиши "детектив", если хочешь почитать детектив
+    напиши "научная литература", если хочешь почитать научную литературу
+    напиши "фантастика", если хочешь почитать фантастику
+    """
+
+    cooking_time = """
+    если хочешь приготовить суши, напиши "суши"
+    если хочешь приготовить пиццу, напиши "пицца"
+    если хочешь приготовить торт, напиши "торт"
+    """
+
+    sushi_recipe = """
+    напиши "калифорния", если хочешь приготовить калифорнию
+    напиши "филадельфия", если хочешь приготовить филадельфию
+    напиши "бостон", если хочешь приготовить эти бостон
+    """
+
+    pizza_recipe = """
+    напиши "пепперони", если хочешь приготовить пепперони
+    напиши "маргарита", если хочешь приготовить маргариту
+    напиши "ветчина" или "грибы", если хочешь приготовить пиццу с ветчиной и грибами
+    """
+
+    cake_recipe = """
+    напиши "сметанник", если хочешь приготовить торт "сметанник"
+    напиши "медовик", если хочешь приготовить торт "медовик"
+    напиши "прага", если хочешь приготовить торт "прага"
     """
  
     for event in longpoll.listen():
@@ -92,13 +140,57 @@ def main():
             elif msg_text == "совет":
                 vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice_time)
 
+            elif msg_text == "рецепт":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=cooking_time)
+
+            elif msg_text == "суши":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=sushi_recipe)
+
+            elif msg_text == "бостон":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_boston())
+
+            elif msg_text == "филадельфия":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_philadelphia())
+
+            elif msg_text == "калифорния":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_california())
+
+            elif msg_text == "пицца":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=pizza_recipe)
+
+            elif msg_text == "пепперони":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_peperoni())
+
+            elif msg_text == "маргарита":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_margarita())
+
+            elif msg_text == "ветчина":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_ham())
+
+            elif msg_text == "грибы":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_ham())
+
+            elif msg_text == "торт":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=cake_recipe)
+
+            elif msg_text == "сметанник":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_sour_cream())
+
+            elif msg_text == "медовик":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_medovik())
+
+            elif msg_text == "прага":
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=recipe.get_praga())
+
             elif msg_text == "сериал":
-                vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.get_series_genre())
-                for event in longpoll.listen():
-                    if event.type == VkEventType.MESSAGE_NEW and event.to_me:
-                        msg_text = event.text.lower()
-                        text = msg_text[3:]
-                        message_id = random.randint(10, 999999999999)
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=genre_series)
+                while True:
+                    messages = vk.method("messages.getConversations", {"count":20, "filter":"unanswered"})
+                    if messages["count"] > 0: 
+                        last_messages = messages["items"][0]["last_message"] 
+                        text = last_messages["text"] 
+                        user_id = last_messages["from_id"] 
+                        msg_id = random.randint(1, 200000000000000000000000000000000000000000000000000000000)
                         if msg_text == "фантастика":
                             vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.series_fantasy())
                         elif msg_text == "комедия":
@@ -111,7 +203,7 @@ def main():
                             vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.series_drama())
 
             elif msg_text == "фильм":
-                vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.get_films_genre())
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=genre_films)
                 if msg_text == "фантастика":
                     vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.films_fantasy())
                 elif msg_text == "комедия":
@@ -124,7 +216,7 @@ def main():
                     vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.films_drama())
 
             elif msg_text == "книга":
-                vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.get_books_genre())
+                vk.messages.send(user_id=event.user_id, random_id=message_id, message=genre_book)
                 if msg_text == "детектив":
                     vk.messages.send(user_id=event.user_id, random_id=message_id, message=advice.books_detective())
                 elif msg_text == "фантастика":
